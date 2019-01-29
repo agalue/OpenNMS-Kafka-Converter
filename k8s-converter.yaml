@@ -25,10 +25,10 @@ spec:
           - name: BOOTSTRAP_SERVERS
             value: kafka.opennms.svc.cluster.local:9092
           - name: APP_ID
-            value: agalue
+            value: onms
           - name: SOURCE_KIND
             value: alarms
-          - name: SOURCE_TOPIC
-            value: OpenNMS.Alarms
+          - name: SOURCE_TOPIC # Check org.opennms.features.kafka.producer.cfg at the OpenNMS server
+            value: OpenNMS_alarms
           - name: DEST_TOPIC
             value: opennms_alarms_json
