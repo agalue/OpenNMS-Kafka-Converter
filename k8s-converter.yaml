@@ -17,6 +17,15 @@ spec:
         app: opennms-kafka-converter
         deployment: drift
     spec:
+      initContainers:
+      - name: dependencies
+        image: waisbrot/wait
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: TARGETS
+          value: kafka.opennms.svc.cluster.local:9092
+        - name: TIMEOUT
+          value: '600'
       containers:
       - name: opennms-kafka-converter
         image: agalue/opennms-kafka-converter:latest
