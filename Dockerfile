@@ -1,7 +1,7 @@
 FROM maven:3-jdk-8 as build
 WORKDIR /app
 COPY . .
-RUN mvn clean install
+RUN mvn -DskipTests clean install
 
 FROM openjdk:8-slim
 ENV VERSION 1.0.0-SNAPSHOT
