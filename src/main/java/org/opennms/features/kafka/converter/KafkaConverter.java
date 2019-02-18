@@ -1,5 +1,6 @@
 package org.opennms.features.kafka.converter;
 
+import java.util.List;
 import java.util.Properties;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -25,20 +26,23 @@ public class KafkaConverter implements Runnable {
 
     enum MessageKind { events, alarms, metrics, nodes };
 
-    @Option(names={"-a","--application-id"}, description="Application ID", required=true)
+    @Option(names={"-a","--application-id"}, paramLabel="id", description="Application ID. Default: ${DEFAULT-VALUE}", defaultValue="grpc2json")
     String applicationId;
 
-    @Option(names={"-b","--bootstrap-servers"}, description="Kafka Bootstrap Servers", required=true)
+    @Option(names={"-b","--bootstrap-servers"}, paramLabel="server:port", description="Kafka Bootstrap Servers", required=true)
     String bootstrapServers;
 
-    @Option(names={"-s","--source-topic"}, description="Source Topic", required=true)
+    @Option(names={"-s","--source-topic"}, paramLabel="topic", description="Source Topic", required=true)
     String sourceTopic;
 
-    @Option(names={"-t","--target-topic"}, description="Target Topic", required=true)
+    @Option(names={"-t","--target-topic"}, paramLabel="topic", description="Target Topic", required=true)
     String targetTopic; 
 
-    @Option(names={"-k","--message-kind"}, description="Message Kind: events, alarms, metrics, nodes")
+    @Option(names={"-k","--message-kind"}, paramLabel="kind", description="Message Kind: events, alarms, metrics, nodes\nDefault: events")
     MessageKind messageKind = MessageKind.events;
+
+    @Option(names={"-e","--producer-param"}, paramLabel="param", split=",", description="Optional Kafka  parameters as comma separated list of key-value pairs.\nExample: -e max.request.size=5000000,acks=1")
+    List<String> kafkaParameters;
 
     public static void main(String[] args) {
         KafkaConverter app = CommandLine.populateCommand(new KafkaConverter(), args);
@@ -87,7 +91,14 @@ public class KafkaConverter implements Runnable {
 
     @Override
     public void run() {
-        KafkaStreams streams = new KafkaStreams(createTopology(), createConfig());
+        final Properties config = createConfig();
+        if (kafkaParameters != null) {
+            kafkaParameters.forEach(option -> {
+                String[] pair = option.split("=");
+                config.setProperty(pair[0], pair[1]);
+            });
+        }
+        KafkaStreams streams = new KafkaStreams(createTopology(), config);
         streams.start();
         streams.localThreadsMetadata().forEach(data -> System.out.println(data));
 
