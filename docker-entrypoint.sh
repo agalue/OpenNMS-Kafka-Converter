@@ -13,8 +13,12 @@ do
   if [[ $env_var =~ ^KAFKA_ ]]; then
     key=$(echo "$env_var" | cut -d_ -f2- | tr '[:upper:]' '[:lower:]' | tr _ .)
     val=${!env_var}
-    echo "[Configuring] '$key'='$val'"
-    OPTIONS+=("$key=$val")
+    if [[ $key == "manager."* ]]; then
+      echo "[Skipping] '$key'"
+    else
+      echo "[Configuring] '$key'='$val'"
+      OPTIONS+=("$key=$val")
+    fi
   fi
 done
 
