@@ -32,7 +32,7 @@ spec:
         imagePullPolicy: Always
         env:
           - name: JAVA_OPTS
-            value: -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+PrintFlagsFinal
+            value: -XX:+UseG1GC
           - name: BOOTSTRAP_SERVERS
             value: kafka.opennms.svc.cluster.local:9092
           - name: APP_ID
