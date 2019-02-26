@@ -43,6 +43,8 @@ spec:
             value: OpenNMS_alarms
           - name: DEST_TOPIC
             value: opennms_alarms_json
+          - name: KAFKA_AUTO_OFFSET_RESET
+            value: latest
         resources:
           limits:
             memory: 128Mi
