@@ -24,7 +24,7 @@ import picocli.CommandLine.Option;
 @Command(name="kafka-converter", mixinStandardHelpOptions=true, version="1.0.0")
 public class KafkaConverter implements Runnable {
 
-    enum MessageKind { events, alarms, metrics, nodes };
+    enum MessageKind { events, alarms, metrics, nodes, edges };
 
     @Option(names={"-a","--application-id"}, paramLabel="id", description="Application ID. Default: ${DEFAULT-VALUE}", defaultValue="grpc2json")
     String applicationId;
@@ -38,7 +38,7 @@ public class KafkaConverter implements Runnable {
     @Option(names={"-t","--target-topic"}, paramLabel="topic", description="Target Topic", required=true)
     String targetTopic; 
 
-    @Option(names={"-k","--message-kind"}, paramLabel="kind", description="Message Kind: events, alarms, metrics, nodes\nDefault: events")
+    @Option(names={"-k","--message-kind"}, paramLabel="kind", description="Message Kind: events, alarms, metrics, nodes, edges\nDefault: events")
     MessageKind messageKind = MessageKind.events;
 
     @Option(names={"-e","--producer-param"}, paramLabel="param", split=",", description="Optional Kafka  parameters as comma separated list of key-value pairs.\nExample: -e max.request.size=5000000,acks=1")
@@ -80,6 +80,8 @@ public class KafkaConverter implements Runnable {
                     return JsonFormat.printer().print(OpennmsModelProtos.Alarm.parseFrom(data));
                 case nodes:
                     return JsonFormat.printer().print(OpennmsModelProtos.Node.parseFrom(data));
+                case edges:
+                    return JsonFormat.printer().print(OpennmsModelProtos.TopologyEdge.parseFrom(data));
                 case metrics:
                     return JsonFormat.printer().print(CollectionSetProtos.CollectionSet.parseFrom(data));
             }
